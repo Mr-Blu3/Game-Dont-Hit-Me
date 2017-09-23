@@ -18,15 +18,6 @@ public class Player extends GameObject {
     public void tick() {
         x += velX;
         y += velY;
-        if(x > 640 - 64) {
-            rLocation(velX - 1, velY - 0);
-        } else if(x <= 0 + 32) {
-            rLocation(velX + 1, velY + 0);
-        }
-        if(y >= 477) {
-            x = 0;
-            y = 0;
-        }
     }
 
 
