@@ -1,3 +1,5 @@
+// https://www.youtube.com/watch?v=0T1U0kbu1Sk game tutorial
+
 package dont.hit.me;
 
 import java.awt.*;
@@ -7,7 +9,7 @@ import java.util.Random;
 
 public class Main extends Canvas implements Runnable {
 
-    public static final int Width = 640, Height = Width / 12 * 9;
+    public static final int WIDTH = 640, HEIGHT = WIDTH / 12 * 9;
     private Thread thread;
     private  boolean running = false;
 
@@ -16,14 +18,16 @@ public class Main extends Canvas implements Runnable {
     private Handler handler;
 
     private Main (){
-        new Window(Width, Height, "Made by Pontus (Width: " + Width + ") (Height: " + Height + ")", this);
 
         handler = new Handler();
+        this.addKeyListener(new KeyInput(handler));
+
+        new Window(WIDTH, HEIGHT, "Made by Pontus (Width: " + WIDTH + ") (Height: " + HEIGHT + ")", this);
         r = new Random();
 
-        for(int i = 0; i < 100; i++){
-            handler.addObject(new Player(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.Player));
-        }
+        handler.addObject(new Player(WIDTH / 2-32, HEIGHT/ 2-32, ID.Player));
+        handler.addObject(new Player(WIDTH / 2+64, HEIGHT/ 2-32, ID.Player2));
+
     }
 
     public synchronized void start(){
@@ -89,7 +93,7 @@ public class Main extends Canvas implements Runnable {
         Graphics g  = bs.getDrawGraphics();
 
         g.setColor(Color.black);
-        g.fillRect(0,0, Width, Height);
+        g.fillRect(0,0, WIDTH, HEIGHT);
 
         handler.render(g);
 
