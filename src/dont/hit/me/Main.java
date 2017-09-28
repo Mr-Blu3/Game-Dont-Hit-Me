@@ -1,4 +1,4 @@
-// https://www.youtube.com/watch?v=0T1U0kbu1Sk game tutorial
+// https://www.youtube.com/watch?v=5ufOPX8N1Rg (tut)
 
 package dont.hit.me;
 
@@ -16,16 +16,42 @@ public class Main extends Canvas implements Runnable {
     private Random r;
 
     private Handler handler;
+    private HUD hud;
+    private Spawn spawner;
+    private Menu theMenu;
+
+    public enum STATE {
+        Menu,
+        Help,
+        Game,
+        End
+    }
+
+    public STATE gameState = STATE.Menu;
 
     private Main (){
-
-        handler = new Handler();
-        this.addKeyListener(new KeyInput(handler));
-
         new Window(WIDTH, HEIGHT, "Made by Pontus (Width: " + WIDTH + ") (Height: " + HEIGHT + ")", this);
-        r = new Random();
 
-        handler.addObject(new Player(WIDTH / 2-32, HEIGHT/ 2-32, ID.Player));
+        hud = new HUD();
+        handler = new Handler(this);
+        theMenu = new Menu(this, handler, hud);
+
+        this.addKeyListener(new KeyInput(handler, this));
+        this.addMouseListener(theMenu);
+
+        r = new Random();
+        spawner = new Spawn(handler, hud, r);
+
+
+        if(gameState == STATE.Game){
+            //handler.addObject(new Player(WIDTH / 2-32, HEIGHT/ 2-32, ID.Player, handler));
+            //handler.addObject(new BasicEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.BasicEnemy, handler));
+
+        } else {
+            for (int i = 0; i < 15; i++) {
+                handler.addObject(new MenuPartical(r.nextInt(WIDTH - 42), r.nextInt(HEIGHT - 25), ID.MenuPartical, handler));
+            }
+        }
 
     }
 
@@ -44,6 +70,7 @@ public class Main extends Canvas implements Runnable {
     }
 
     public void run(){
+        this.requestFocus();
         long lastTime = System.nanoTime();
         double amountOfTicks = 60.0;
         double ns = 1000000000 / amountOfTicks;
@@ -80,6 +107,31 @@ public class Main extends Canvas implements Runnable {
 
     private void tick() {
         handler.tick();
+
+        if(gameState == STATE.Game){
+            hud.tick();
+            spawner.tick();
+
+            if(HUD.HEALTH <= 0){
+                gameState = STATE.End;
+                handler.clearEnemys();
+                this.resetGame();
+            }
+
+        } else if(gameState == STATE.Menu || gameState == STATE.End){
+            theMenu.tick();
+        }
+
+    }
+
+    private void resetGame(){
+        HUD.HEALTH = 100*2;
+        hud.setLevel(1);
+        hud.setScore(0);
+
+        for (int i = 0; i < 15; i++) {
+            handler.addObject(new MenuPartical(r.nextInt(WIDTH - 42), r.nextInt(HEIGHT - 25), ID.MenuPartical, handler));
+        }
     }
 
     private void render() {
@@ -96,8 +148,24 @@ public class Main extends Canvas implements Runnable {
 
         handler.render(g);
 
+        if(gameState == STATE.Game){
+            hud.render(g);
+        } else if(gameState == STATE.Menu || gameState == STATE.Help || gameState == STATE.End) {
+            theMenu.render(g);
+        }
+
+
         g.dispose();
         bs.show();
+    }
+
+    public static int clamp(int xVal, int min, int max){
+        if(xVal >= max)
+            return max;
+        else if(xVal <= min)
+            return min;
+        else
+            return xVal;
     }
 
     public static void main(String[] args) {
