@@ -11,7 +11,7 @@ public class Spawn {
     private HUD hud;
     private Random r;
 
-    private int scoreKeep = 0;
+    public int scoreKeep = 0;
 
     public Spawn(Handler handler, HUD hud, Random r) {
         this.handler = handler;
@@ -23,7 +23,7 @@ public class Spawn {
         scoreKeep++;
 
         if (scoreKeep >= 100){
-            scoreKeep = 0;
+
             hud.setLevel(hud.getLevel() + 1);
 
 
@@ -47,7 +47,7 @@ public class Spawn {
                 handler.addObject(new EnemyBoss((Main.WIDTH / 2)-28, -120, ID.EnemyBoss, handler));
                 handler.addObject(new SmartEnemy(r.nextInt(Main.WIDTH - 50), r.nextInt(Main.HEIGHT - 50), ID.SmartEnemy, handler));
            }
-
+            scoreKeep = 0;
         }
     }
 

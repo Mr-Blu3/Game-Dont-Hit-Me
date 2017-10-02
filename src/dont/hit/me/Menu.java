@@ -14,11 +14,13 @@ public class Menu extends MouseAdapter {
     private Handler handler;
     private HUD hud;
     private Random r = new Random();
+    private Spawn spawn;
 
-    public Menu(Main main, Handler handler, HUD hud){
+    public Menu(Main main, Handler handler, HUD hud, Spawn spawn){
         this.hud = hud;
         this.game = main;
         this.handler = handler;
+        this.spawn = spawn;
     }
 
     public void mousePressed(MouseEvent e){
@@ -27,12 +29,7 @@ public class Menu extends MouseAdapter {
 
         if (game.gameState == Main.STATE.Menu) {
             //Play Button
-            if(mouseOver(mX, mY, 210, 150, 200, 64)){
-                game.gameState = Main.STATE.Game;
-                handler.clearEnemys();
-                handler.addObject(new Player(game.WIDTH / 2-32, game.HEIGHT/ 2-32, ID.Player, handler));
-                handler.addObject(new BasicEnemy(r.nextInt(game.WIDTH), r.nextInt(game.HEIGHT), ID.BasicEnemy, handler));
-            }
+            if(mouseOver(mX, mY, 210, 150, 200, 64)) this.resetLevel();
 
 
             //Help Button
@@ -54,16 +51,23 @@ public class Menu extends MouseAdapter {
             }
         }
         if(game.gameState == Main.STATE.End){
-            if(mouseOver(mX, mY, 210, 150, 200, 64)) {
-                game.gameState = Main.STATE.Game;
-                handler.addObject(new Player(game.WIDTH / 2-32, game.HEIGHT/ 2-32, ID.Player, handler));
-                handler.clearEnemys();
-                handler.addObject(new BasicEnemy(r.nextInt(game.WIDTH), r.nextInt(game.HEIGHT), ID.BasicEnemy, handler));
-            }
+            if(mouseOver(mX, mY, 210, 350, 200, 64)) this.resetLevel();
         }
     }
     public void mouseReleased(MouseEvent e){
 
+    }
+
+    private void resetLevel(){
+        game.gameState = Main.STATE.PlayReset;
+        HUD.HEALTH = 100*2;
+        hud.setLevel(1);
+        hud.setScore(0);
+        spawn.scoreKeep = 0;
+        handler.clearEnemys();
+        game.gameState = Main.STATE.Game;
+        handler.addObject(new Player(game.WIDTH / 2-32, game.HEIGHT/ 2-32, ID.Player, handler));
+        handler.addObject(new BasicEnemy(r.nextInt(game.WIDTH), r.nextInt(game.HEIGHT), ID.BasicEnemy, handler));
     }
 
     private boolean mouseOver(int mX, int mY, int x, int y, int width, int height){

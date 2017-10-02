@@ -1,4 +1,4 @@
-// https://www.youtube.com/watch?v=5ufOPX8N1Rg (tut)
+// https://www.youtube.com/watch?v=K_CfBxvpd9A (tut)
 
 package dont.hit.me;
 
@@ -10,10 +10,12 @@ import java.util.Random;
 public class Main extends Canvas implements Runnable {
 
     public static final int WIDTH = 640, HEIGHT = WIDTH / 12 * 9;
+    public static boolean paused = false;
+
     private Thread thread;
     private  boolean running = false;
 
-    private Random r;
+    private Random r = new Random();
 
     private Handler handler;
     private HUD hud;
@@ -24,6 +26,7 @@ public class Main extends Canvas implements Runnable {
         Menu,
         Help,
         Game,
+        PlayReset,
         End
     }
 
@@ -34,14 +37,11 @@ public class Main extends Canvas implements Runnable {
 
         hud = new HUD();
         handler = new Handler(this);
-        theMenu = new Menu(this, handler, hud);
+        spawner = new Spawn(handler, hud, r);
+        theMenu = new Menu(this, handler, hud, spawner);
 
         this.addKeyListener(new KeyInput(handler, this));
         this.addMouseListener(theMenu);
-
-        r = new Random();
-        spawner = new Spawn(handler, hud, r);
-
 
         if(gameState == STATE.Game){
             //handler.addObject(new Player(WIDTH / 2-32, HEIGHT/ 2-32, ID.Player, handler));
@@ -106,19 +106,21 @@ public class Main extends Canvas implements Runnable {
     * */
 
     private void tick() {
-        handler.tick();
-
         if(gameState == STATE.Game){
-            hud.tick();
-            spawner.tick();
+            if(!paused){
+                handler.tick();
+                hud.tick();
+                spawner.tick();
+                if(HUD.HEALTH <= 0){
+                    gameState = STATE.End;
+                    handler.clearEnemys();
+                    this.resetGame();
+                }
 
-            if(HUD.HEALTH <= 0){
-                gameState = STATE.End;
-                handler.clearEnemys();
-                this.resetGame();
             }
 
         } else if(gameState == STATE.Menu || gameState == STATE.End){
+            handler.tick();
             theMenu.tick();
         }
 
@@ -126,9 +128,6 @@ public class Main extends Canvas implements Runnable {
 
     private void resetGame(){
         HUD.HEALTH = 100*2;
-        hud.setLevel(1);
-        hud.setScore(0);
-
         for (int i = 0; i < 15; i++) {
             handler.addObject(new MenuPartical(r.nextInt(WIDTH - 42), r.nextInt(HEIGHT - 25), ID.MenuPartical, handler));
         }
@@ -147,6 +146,10 @@ public class Main extends Canvas implements Runnable {
         g.fillRect(0,0, WIDTH, HEIGHT);
 
         handler.render(g);
+
+        if(paused){
+            g.drawString("Paused", 100, 100);
+        }
 
         if(gameState == STATE.Game){
             hud.render(g);
