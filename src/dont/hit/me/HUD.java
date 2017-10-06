@@ -7,7 +7,7 @@ import java.awt.*;
  */
 public class HUD {
 
-    private int greenValue = 255;
+    public int greenValue = 255;
 
     public static int HEALTH = 100;
 

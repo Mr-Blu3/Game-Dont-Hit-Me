@@ -35,10 +35,16 @@ public class KeyInput extends KeyAdapter {
 
         }
 
-        if(key == KeyEvent.VK_P) {
+        if(key == KeyEvent.VK_P || key == KeyEvent.VK_O) {
             if(game.gameState == Main.STATE.Game){
-                if(Main.paused) Main.paused = false;
-                else Main.paused = true;
+                if(Main.paused) {
+                    Main.paused = false;
+                    if(key == KeyEvent.VK_O) Main.shop = false;
+                } else {
+                    // Game frezzing hold esc makes it go pix after pix forward until you let go why?
+                    Main.paused = true;
+                    if(key == KeyEvent.VK_O) Main.shop = true;
+                }
             }
         }
 

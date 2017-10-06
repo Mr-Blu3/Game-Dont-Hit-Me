@@ -29,7 +29,10 @@ public class Menu extends MouseAdapter {
 
         if (game.gameState == Main.STATE.Menu) {
             //Play Button
-            if(mouseOver(mX, mY, 210, 150, 200, 64)) this.resetLevel();
+            if(mouseOver(mX, mY, 210, 150, 200, 64)) {
+                game.gameState = Main.STATE.mode;
+                return;
+            }
 
 
             //Help Button
@@ -41,6 +44,43 @@ public class Menu extends MouseAdapter {
             if(mouseOver(mX, mY, 210, 350, 200, 64)){
                 System.exit(1);
             }
+
+            if(game.gameState == Main.STATE.shop) {
+                // Upgrade Health
+                if(mouseOver(mX, mY, 210, 150, 200, 64)) {
+                    //game.gameState = Main.STATE.mode;
+                }
+                // Upgrade Speed
+                if(mouseOver(mX, mY, 210, 250, 200, 64)) {
+                    //game.gameState = Main.STATE.mode;
+                }
+                // Refill Health
+                if(mouseOver(mX, mY, 210, 350, 200, 64)) {
+                    //game.gameState = Main.STATE.mode;
+                }
+            }
+
+        }
+
+        if (game.gameState == Main.STATE.mode) {
+            // Easy
+            if(mouseOver(mX, mY, 210, 150, 200, 64)) {
+                game.diffMode = 0;
+                this.resetLevel(new BasicEnemy(r.nextInt(game.WIDTH), r.nextInt(game.HEIGHT), ID.BasicEnemy, handler));
+            }
+
+
+            // Normal Button
+            if(mouseOver(mX, mY, 210, 250, 200, 64)){
+                game.diffMode = 1;
+                this.resetLevel(new BasicEnemy(r.nextInt(game.WIDTH), r.nextInt(game.HEIGHT), ID.BasicEnemy, handler));
+            }
+
+            // Hard Button
+            if(mouseOver(mX, mY, 210, 350, 200, 64)){
+                game.diffMode = 2;
+                this.resetLevel(new HardEnemy(r.nextInt(game.WIDTH), r.nextInt(game.HEIGHT), ID.HardEnemy, handler));
+            }
         }
 
         //Back Button
@@ -50,15 +90,16 @@ public class Menu extends MouseAdapter {
                 return;
             }
         }
+
         if(game.gameState == Main.STATE.End){
-            if(mouseOver(mX, mY, 210, 350, 200, 64)) this.resetLevel();
+            if(mouseOver(mX, mY, 210, 350, 200, 64)) game.gameState = Main.STATE.Menu;
         }
     }
     public void mouseReleased(MouseEvent e){
 
     }
 
-    private void resetLevel(){
+    private void resetLevel(GameObject Enemy){
         game.gameState = Main.STATE.PlayReset;
         HUD.HEALTH = 100*2;
         hud.setLevel(1);
@@ -67,7 +108,7 @@ public class Menu extends MouseAdapter {
         handler.clearEnemys();
         game.gameState = Main.STATE.Game;
         handler.addObject(new Player(game.WIDTH / 2-32, game.HEIGHT/ 2-32, ID.Player, handler));
-        handler.addObject(new BasicEnemy(r.nextInt(game.WIDTH), r.nextInt(game.HEIGHT), ID.BasicEnemy, handler));
+        handler.addObject(Enemy);
     }
 
     private boolean mouseOver(int mX, int mY, int x, int y, int width, int height){
@@ -115,6 +156,7 @@ public class Menu extends MouseAdapter {
 
             g.setFont(fnt3);
             g.drawString("Use W: A: S: D: to move player and dodge enemies! =)", 70, 210);
+            g.drawString("Press esc to get back to menu!", 70, 240);
 
             g.setFont(fnt2);
             g.setColor(Color.white);
@@ -132,6 +174,40 @@ public class Menu extends MouseAdapter {
             g.setColor(Color.white);
             g.drawRect(210, 350, 200, 64);
             g.drawString("Try Again", 245, 390);
+        } else if(game.gameState == Main.STATE.mode) {
+            g.setFont(fnt);
+            g.setColor(Color.white);
+            g.drawString("Select Mode", 240 , 100);
+
+            g.setFont(fnt2);
+            g.setColor(Color.white);
+            g.drawRect(210, 150, 200, 64);
+            g.drawString("Easy", 280, 190);
+
+            g.setColor(Color.white);
+            g.drawRect(210, 250, 200, 64);
+            g.drawString("Normal", 260, 290);
+
+            g.setColor(Color.white);
+            g.drawRect(210, 350, 200, 64);
+            g.drawString("Hard", 280, 390);
+        } else if(game.gameState == Main.STATE.shop) {
+            g.setFont(fnt);
+            g.setColor(Color.white);
+            g.drawString("Shop", 240 , 100);
+
+            g.setFont(fnt2);
+            g.setColor(Color.white);
+            g.drawRect(210, 150, 200, 64);
+            g.drawString("Upgrade Health", 260, 190);
+
+            g.setColor(Color.white);
+            g.drawRect(210, 250, 200, 64);
+            g.drawString("Upgrade Speed", 260, 290);
+
+            g.setColor(Color.white);
+            g.drawRect(210, 350, 200, 64);
+            g.drawString("Refill Health", 260, 390);
         }
     }
 

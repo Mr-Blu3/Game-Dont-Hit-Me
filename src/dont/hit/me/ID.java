@@ -11,5 +11,6 @@ public enum ID {
     SmartEnemy(),
     EnemyBoss(),
     MenuPartical(),
+    HardEnemy(),
     Trail()
 }

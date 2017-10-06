@@ -37,7 +37,7 @@ public class MenuPartical extends GameObject{
         if(y <= 0 || y >= Main.HEIGHT - 42) velY *= -1;
         if(x <= 0 || x >= Main.WIDTH - 25) velX *= -1;
 
-        handler.addObject(new Trail(x, y, ID.Trail, col, 16, 16, 0.05f, handler));
+        handler.addObject(new Trail(x, y, ID.Trail, col, 16, 16, 0.05f, 2,3, handler));
     }
 
     public void render(Graphics g){

@@ -28,11 +28,10 @@ public class BasicEnemy extends GameObject{
         if(y <= 0 || y >= Main.HEIGHT - 32) velY *= -1;
         if(x <= 0 || x >= Main.WIDTH - 16) velX *= -1;
 
-        handler.addObject(new Trail(x, y, ID.Trail, Color.red, 16, 16, 0.02f, handler));
+        handler.addObject(new Trail(x, y, ID.Trail, Color.red, 16, 16, 0.02f, 2, 2, handler));
     }
 
     public void render(Graphics g){
-        g.setColor(Color.red);
         g.fillRect((int)x, (int)y, 16, 16);
     }
 }

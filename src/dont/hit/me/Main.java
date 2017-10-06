@@ -1,9 +1,10 @@
-// https://www.youtube.com/watch?v=K_CfBxvpd9A (tut)
+// https://www.youtube.com/watch?v=RrahDyZXAv0 (tut)
 
 package dont.hit.me;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
 
@@ -11,6 +12,11 @@ public class Main extends Canvas implements Runnable {
 
     public static final int WIDTH = 640, HEIGHT = WIDTH / 12 * 9;
     public static boolean paused = false;
+    public static boolean shop = false;
+
+    // 0 = Easy, 1 = normal, 2 = Hard
+    public int diffMode = 0;
+
 
     private Thread thread;
     private  boolean running = false;
@@ -27,27 +33,32 @@ public class Main extends Canvas implements Runnable {
         Help,
         Game,
         PlayReset,
-        End
+        End,
+        mode,
+        shop
     }
 
     public STATE gameState = STATE.Menu;
 
+    public static BufferedImage sprite_sheet;
+
     private Main (){
         new Window(WIDTH, HEIGHT, "Made by Pontus (Width: " + WIDTH + ") (Height: " + HEIGHT + ")", this);
 
+
         hud = new HUD();
         handler = new Handler(this);
-        spawner = new Spawn(handler, hud, r);
+        spawner = new Spawn(handler, hud, r, this);
         theMenu = new Menu(this, handler, hud, spawner);
 
         this.addKeyListener(new KeyInput(handler, this));
         this.addMouseListener(theMenu);
 
-        if(gameState == STATE.Game){
-            //handler.addObject(new Player(WIDTH / 2-32, HEIGHT/ 2-32, ID.Player, handler));
-            //handler.addObject(new BasicEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.BasicEnemy, handler));
+        BufferedImgLoader loader = new BufferedImgLoader();
 
-        } else {
+        sprite_sheet = loader.loadImage("/player_board.png");
+
+        if(gameState != STATE.Game){
             for (int i = 0; i < 15; i++) {
                 handler.addObject(new MenuPartical(r.nextInt(WIDTH - 42), r.nextInt(HEIGHT - 25), ID.MenuPartical, handler));
             }
@@ -107,7 +118,7 @@ public class Main extends Canvas implements Runnable {
 
     private void tick() {
         if(gameState == STATE.Game){
-            if(!paused){
+            if(!paused || !shop){
                 handler.tick();
                 hud.tick();
                 spawner.tick();
@@ -119,7 +130,7 @@ public class Main extends Canvas implements Runnable {
 
             }
 
-        } else if(gameState == STATE.Menu || gameState == STATE.End){
+        } else if(gameState == STATE.Menu || gameState == STATE.End || gameState == STATE.Help || gameState == STATE.mode){
             handler.tick();
             theMenu.tick();
         }
@@ -142,21 +153,26 @@ public class Main extends Canvas implements Runnable {
 
         Graphics g  = bs.getDrawGraphics();
 
-        g.setColor(Color.black);
+        if(hud.greenValue < 100) {
+            if(hud.greenValue <= 10) g.setColor(new Color(75, 90, 0)); else g.setColor(new Color(75, hud.greenValue - 10, 0));
+        } else {
+            g.setColor(new Color(75, 90, 0));
+        }
+
         g.fillRect(0,0, WIDTH, HEIGHT);
 
         handler.render(g);
 
         if(paused){
             g.drawString("Paused", 100, 100);
+            gameState = STATE.shop;
         }
 
         if(gameState == STATE.Game){
             hud.render(g);
-        } else if(gameState == STATE.Menu || gameState == STATE.Help || gameState == STATE.End) {
+        } else if(gameState == STATE.Menu || gameState == STATE.Help || gameState == STATE.End || gameState == STATE.mode) {
             theMenu.render(g);
         }
-
 
         g.dispose();
         bs.show();
