@@ -2,6 +2,7 @@
 
 package dont.hit.me;
 
+import javax.swing.plaf.nimbus.State;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -12,7 +13,6 @@ public class Main extends Canvas implements Runnable {
 
     public static final int WIDTH = 640, HEIGHT = WIDTH / 12 * 9;
     public static boolean paused = false;
-    public static boolean shop = false;
 
     // 0 = Easy, 1 = normal, 2 = Hard
     public int diffMode = 0;
@@ -35,7 +35,7 @@ public class Main extends Canvas implements Runnable {
         PlayReset,
         End,
         mode,
-        shop
+        Shop
     }
 
     public STATE gameState = STATE.Menu;
@@ -118,7 +118,7 @@ public class Main extends Canvas implements Runnable {
 
     private void tick() {
         if(gameState == STATE.Game){
-            if(!paused || !shop){
+            if(!paused){
                 handler.tick();
                 hud.tick();
                 spawner.tick();
@@ -154,7 +154,8 @@ public class Main extends Canvas implements Runnable {
         Graphics g  = bs.getDrawGraphics();
 
         if(hud.greenValue < 100) {
-            if(hud.greenValue <= 10) g.setColor(new Color(75, 90, 0)); else g.setColor(new Color(75, hud.greenValue - 10, 0));
+            if(hud.greenValue >= 0 && hud.greenValue <= 90) g.setColor(new Color(75, (int) hud.greenValue, 0));
+            else g.setColor(new Color(75, 90, 0));
         } else {
             g.setColor(new Color(75, 90, 0));
         }
@@ -164,13 +165,18 @@ public class Main extends Canvas implements Runnable {
         handler.render(g);
 
         if(paused){
-            g.drawString("Paused", 100, 100);
-            gameState = STATE.shop;
+            g.setColor(Color.gray);
+            g.drawString("Game Is Paused Press (p) To Play Some More", 350, 40);
+            gameState = STATE.Shop;
+        } else {
+            if(gameState == STATE.Shop) {
+                gameState = STATE.Game;
+            }
         }
 
         if(gameState == STATE.Game){
             hud.render(g);
-        } else if(gameState == STATE.Menu || gameState == STATE.Help || gameState == STATE.End || gameState == STATE.mode) {
+        } else if(gameState == STATE.Menu || gameState == STATE.Help || gameState == STATE.End || gameState == STATE.mode || gameState == STATE.Shop) {
             theMenu.render(g);
         }
 

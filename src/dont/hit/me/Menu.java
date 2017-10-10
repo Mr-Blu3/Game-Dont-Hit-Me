@@ -45,21 +45,34 @@ public class Menu extends MouseAdapter {
                 System.exit(1);
             }
 
-            if(game.gameState == Main.STATE.shop) {
-                // Upgrade Health
-                if(mouseOver(mX, mY, 210, 150, 200, 64)) {
-                    //game.gameState = Main.STATE.mode;
+        }
+
+        if(Main.paused) {
+            // Upgrade Health
+            if(hud.getScore() >= 1){
+                if(mouseOver(mX, mY, 150, 150, 300, 64)) {
+                    if(hud.VMaxHP < (100 + (hud.VMaxHP / 2))){
+                        hud.VMaxHP += 20;
+                        hud.HEALTH = (100 + (hud.VMaxHP / 2));
+                        hud.setScore(hud.getScore() - 100);
+                        Main.paused = false;
+                    }
                 }
+
                 // Upgrade Speed
-                if(mouseOver(mX, mY, 210, 250, 200, 64)) {
-                    //game.gameState = Main.STATE.mode;
+                if(mouseOver(mX, mY, 150, 250, 300, 64)) {
+                    handler.speed++;
+                    hud.setScore(hud.getScore() - 100);
+                    Main.paused = false;
                 }
+
                 // Refill Health
-                if(mouseOver(mX, mY, 210, 350, 200, 64)) {
-                    //game.gameState = Main.STATE.mode;
+                if(mouseOver(mX, mY, 150, 350, 300, 64)) {
+                    hud.HEALTH = (50 + (hud.VMaxHP / 2));
+                    hud.setScore(hud.getScore() - 100);
+                    Main.paused = false;
                 }
             }
-
         }
 
         if (game.gameState == Main.STATE.mode) {
@@ -101,7 +114,9 @@ public class Menu extends MouseAdapter {
 
     private void resetLevel(GameObject Enemy){
         game.gameState = Main.STATE.PlayReset;
-        HUD.HEALTH = 100*2;
+        handler.speed = 3;
+        hud.VMaxHP = 50;
+        HUD.HEALTH = 200;
         hud.setLevel(1);
         hud.setScore(0);
         spawn.scoreKeep = 0;
@@ -191,23 +206,25 @@ public class Menu extends MouseAdapter {
             g.setColor(Color.white);
             g.drawRect(210, 350, 200, 64);
             g.drawString("Hard", 280, 390);
-        } else if(game.gameState == Main.STATE.shop) {
+        }
+
+        if(Main.paused) {
             g.setFont(fnt);
             g.setColor(Color.white);
             g.drawString("Shop", 240 , 100);
 
             g.setFont(fnt2);
             g.setColor(Color.white);
-            g.drawRect(210, 150, 200, 64);
-            g.drawString("Upgrade Health", 260, 190);
+            g.drawRect(150, 150, 300, 64);
+            g.drawString("Upgrade Health", 200, 190);
 
             g.setColor(Color.white);
-            g.drawRect(210, 250, 200, 64);
-            g.drawString("Upgrade Speed", 260, 290);
+            g.drawRect(150, 250, 300, 64);
+            g.drawString("Upgrade Speed", 200, 290);
 
             g.setColor(Color.white);
-            g.drawRect(210, 350, 200, 64);
-            g.drawString("Refill Health", 260, 390);
+            g.drawRect(150, 350, 300, 64);
+            g.drawString("Refill Health", 220, 390);
         }
     }
 

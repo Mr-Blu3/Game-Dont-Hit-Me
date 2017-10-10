@@ -7,7 +7,9 @@ import java.awt.*;
  */
 public class HUD {
 
-    public int greenValue = 255;
+    public float greenValue = 255f;
+
+    public int VMaxHP = 0;
 
     public static int HEALTH = 100;
 
@@ -19,23 +21,22 @@ public class HUD {
 
     public void tick(){
 
-        HEALTH = Main.clamp(HEALTH, 0, 100);
+        HEALTH = Main.clamp(HEALTH, 0, 100 + (VMaxHP / 2));
 
-        greenValue = Main.clamp(greenValue, 0, 255);
-
-        greenValue = HEALTH*2;
-
+        greenValue = Main.clamp((int) greenValue, 0, 255);
+        greenValue = HEALTH * 2;
         score++;
     }
 
     public void render(Graphics g){
         g.setColor(Color.gray);
-        g.fillRect(15, 15, 200, 32);
-        g.setColor(new Color(75, greenValue, 0));
+        g.fillRect(15, 15, 200 + VMaxHP, 32);
+        if(greenValue < 255) g.setColor(new Color(75, (int) greenValue, 0));
+        else g.setColor(new Color(75, 255, 0));
         g.fillRect(15, 15, HEALTH * 2, 32);
 
         g.setColor(Color.white);
-        g.drawRect(15, 15, 200, 32);
+        g.drawRect(15, 15, 200 + VMaxHP, 32);
 
         g.drawString("Score: "+  score, 15, 64);
         g.drawString("Level: "+  level, 15, 80);

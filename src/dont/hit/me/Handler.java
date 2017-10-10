@@ -13,7 +13,7 @@ public class Handler {
 
     private Main game;
 
-    private Random r = new Random();
+    public int speed = 3;
 
     public Handler(Main game){
         this.game = game;
