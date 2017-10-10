@@ -68,7 +68,7 @@ public class Menu extends MouseAdapter {
 
                 // Refill Health
                 if(mouseOver(mX, mY, 150, 350, 300, 64)) {
-                    hud.HEALTH = (50 + (hud.VMaxHP / 2));
+                    hud.HEALTH += (50 + (hud.VMaxHP / 2));
                     hud.setScore(hud.getScore() - 100);
                     Main.paused = false;
                 }
